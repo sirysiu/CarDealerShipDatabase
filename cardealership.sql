@@ -18,8 +18,10 @@ year INT,
 make VARCHAR(50),
 model VARCHAR(50),
 color VARCHAR(50),
-mileage VARCHAR(50),
+mileage INT,
+price DOUBLE,
 sold BOOL,
+type VARCHAR(50),
 PRIMARY KEY(vin)
 );
 
@@ -30,21 +32,15 @@ FOREIGN KEY(dealership_id) REFERENCES dealerships(dealership_id),
 FOREIGN KEY(vin) REFERENCES vehicles(vin),
 PRIMARY KEY(dealership_id, vin) 
 );
-
-CREATE TABLE `sales_contract`(
-id INT NOT NULL AUTO_INCREMENT,
-sales_tax_amount DECIMAL(10,2),
-recording_fee DECIMAL(6, 2),
-processing_fee DECIMAL(6, 2),
-total_price DECIMAL(10,2),
-date DATE,
-customer_name VARCHAR(50),
-customer_email VARCHAR(50),
-vin INT,
-PRIMARY KEY(id),
-FOREIGN KEY(vin) REFERENCES vehicles(vin) 
-
+CREATE TABLE SalesContract (
+    id INT AUTO_INCREMENT PRIMARY KEY,  -- Primary key to uniquely identify each contract
+    salesTaxAmount DECIMAL(10, 2),      -- Store the sales tax amount (using DECIMAL for currency)
+    recordingFee DECIMAL(10, 2),        -- Store the recording fee (using DECIMAL for currency)
+    processingFee DECIMAL(10, 2),       -- Store the processing fee (using DECIMAL for currency)
+    isFinancing BOOLEAN,                -- Store the financing status (TRUE/FALSE)
+    monthlyPayment DECIMAL(10, 2)       -- Store the monthly payment amount (using DECIMAL for currency)
 );
+
 CREATE TABLE `lease_contract` (
     id INT NOT NULL AUTO_INCREMENT,
     lease_amount DECIMAL(10, 2),
@@ -65,13 +61,13 @@ VALUES
 ('Luxury Motors', '789 Oak St, Springfield, IL', '217-555-9012');
 
 
-INSERT INTO `vehicles` (vin, year, make, model, color, mileage, sold) 
+INSERT INTO `vehicles` (vin, year, make, model, color, mileage, price, sold, type) 
 VALUES 
-(1001, 2020, 'Toyota', 'Camry', 'Blue', '25000', FALSE),
-(1002, 2021, 'Honda', 'Civic', 'Red', '15000', FALSE),
-(1003, 2019, 'Ford', 'Mustang', 'Black', '30000', TRUE),
-(1004, 2022, 'Chevrolet', 'Tahoe', 'White', '5000', FALSE),
-(1005, 2020, 'Tesla', 'Model 3', 'Silver', '10000', TRUE);
+(1001, 2020, 'Toyota', 'Camry', 'Blue', 25000, 150000, FALSE, 'Sedan'),
+(1002, 2021, 'Honda', 'Civic', 'Red', 15000, 29999, FALSE, 'Sedan'),
+(1003, 2019, 'Ford', 'Mustang', 'Black', 30000, 34444, TRUE, 'Coupe'),
+(1004, 2022, 'Chevrolet', 'Tahoe', 'White', 5000, 343434, FALSE, 'SUV'),
+(1005, 2020, 'Tesla', 'Model 3', 'Silver', 10000, 1234, TRUE, 'Sedan');
 
 
 INSERT INTO `inventory` (dealership_id, vin) 
@@ -81,11 +77,14 @@ VALUES
 (2, 1003),
 (3, 1004),
 (3, 1005);
+INSERT INTO SalesContract (salesTaxAmount, recordingFee, processingFee, isFinancing, monthlyPayment)
+VALUES
+    (150.75, 50.00, 25.00, TRUE, 350.00),   -- Contract 1
+    (200.50, 60.00, 30.00, FALSE, 500.00),  -- Contract 2
+    (100.00, 45.00, 20.00, TRUE, 400.00),   -- Contract 3
+    (175.25, 55.00, 28.50, TRUE, 600.00),   -- Contract 4
+    (130.00, 48.00, 22.00, FALSE, 450.00);  -- Contract 5
 
-INSERT INTO `sales_contract` (sales_tax_amount, recording_fee, processing_fee, total_price, date, customer_name, customer_email, vin) 
-VALUES 
-(1500.00, 150.00, 100.00, 25000.00, '2023-07-15', 'John Doe', 'johndoe@example.com', 1003),
-(1300.00, 130.00, 90.00, 22000.00, '2023-08-20', 'Jane Smith', 'janesmith@example.com', 1005);
 
 INSERT INTO `lease_contract` (lease_amount, lease_term, start_date, end_date, customer_name, customer_email, vin) 
 VALUES 
